@@ -43,7 +43,7 @@ const Home = () => {
             year
         })
     }
-    const getPersons = async () => {
+    const getPersons = async (current) => {
         setResponse((val) => {
             return {
                 ...val,
@@ -51,11 +51,11 @@ const Home = () => {
             }
         })
         try {
-            const { data } = await axios(`https://history.muffinlabs.com/date/${reqDate.month}/${reqDate.day}`)
+            const { data } = await axios(`https://history.muffinlabs.com/date/${current ? "1" : reqDate.month}/${current ? "2" : reqDate.day}`)
             setResponse((val) => {
                 return {
-                    ...val,
                     loading: null,
+                    error: null,
                     data: data.data
                 }
             })
@@ -72,15 +72,16 @@ const Home = () => {
     useEffect(() => {
         getSelectedDate(date)
         nextDate(date)
-        getPersons()
     }, [date])
-
+    useEffect(() => {
+        getPersons(true)
+    }, [])
     return (
         <div className='calendar__container'>
             <Calendar onChange={setDate} value={date} />
             <p>Selected Date:  {`${selectedDate.day}/${selectedDate.month}/${selectedDate.year}`}</p>
             <p>Next Date: {`${reqDate.day}/${reqDate.month}/${reqDate.year}`}</p>
-            <button onClick={getPersons}>Submit</button>
+            <button onClick={() => getPersons(false)}>Submit</button>
             <div className='persons__list'>
                 <div className='persons__listheading'>
                     <div className='persons__name'>People</div>
